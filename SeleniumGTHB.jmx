@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4.1">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group empty" enabled="false">
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="__ClearBrowserCache" enabled="true">
+          <stringProp name="WebDriverSampler.script">import org.openqa.selenium.*
+
+WDS.sampleResult.sampleStart()
+WDS.browser.get(&apos;about:preferences#privacy&apos;)
+sleep(2000)
+WDS.browser.findElement(By.id(&quot;clearSiteDataButton&quot;)).click()
+sleep(2000)
+WDS.browser.findElement(By.xpath(&quot;//*[@id=&apos;preferences-body&apos;]&quot;)).sendKeys(&apos;\uE007&apos;)
+sleep(2000)
+WDS.sampleResult.sampleEnd()</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">
+            <collectionProp name="Asserion.test_strings"/>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">true</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="_0_empty" enabled="true">
+          <stringProp name="WebDriverSampler.script">//----------------------------------------------Don`t touch------------------------------------------------//
+import org.openqa.selenium.*
+import org.apache.commons.lang3.time.StopWatch
+
+def waitUntilDisplayed(WDEx, searchMethod, pathOfElement, pollingFrequencyInMS, maxTimeWaitingInMS, checkOnDisplay){
+	int i=1
+	boolean check
+	boolean check1
+	StopWatch pageLoad = new StopWatch()
+	pageLoad.start()
+
+	while(i&lt;=1)
+    {
+    		i = checkTimeIsOver((pageLoad.getTime()).intValue(), maxTimeWaitingInMS)
+    		try{
+    			if(searchMethod==&quot;id&quot;){
+                check = WDEx.browser.findElements(By.id(pathOfElement))
+    			}
+    			else if(searchMethod==&quot;xpath&quot;){
+                check = WDEx.browser.findElements(By.xpath(pathOfElement))
+    			}
+    			else if(searchMethod==&quot;css&quot;){
+                check = WDEx.browser.findElements(By.cssSelector(pathOfElement))
+    			}
+    			else{
+    				WDS.sampleResult.setSuccessful(false)
+				WDS.sampleResult.setResponseCode(&quot;The wrong searchMethod argument. &quot;
+					+ &quot;The correct value is \&quot;id\&quot;, \&quot;xpath\&quot;, \&quot;css\&quot;&quot;)
+				WDS.sampleResult.isStopThread()
+				WDS.log.info(&quot;ERROR&quot;)
+				return 2
+    			}
+            }catch( t) {
+            	check = false
+            	}
+            String str = String.valueOf(check)
+            WDEx.log.info(&quot;dddddddddddddddddddddddddddddddddddd &quot;+str)
+            
+            if(check)
+            {
+            	i = checkOnDisplay ? 1 : 2
+                while(i&lt;=1)
+                {
+                    try{
+                    	if(searchMethod==&quot;id&quot;){
+                			check1 = WDEx.browser.findElement(By.id(pathOfElement)).isDisplayed()
+    					}
+		    			else if(searchMethod==&quot;xpath&quot;){
+		                	check1 = WDEx.browser.findElement(By.xpath(pathOfElement)).isDisplayed()
+		    			}
+		    			else if(searchMethod==&quot;css&quot;){
+		    				check1 = WDEx.browser.findElement(By.cssSelector(pathOfElement)).isDisplayed()
+		    			}
+                    }catch( t){
+                    	check1 = false
+                    	}
+                    if(check1)
+                    {
+                        i=2
+                        WDEx.log.info(&quot;\nElement Displayed.&quot;)
+                    }
+                    else
+                    {
+                        i=1
+                        sleep(pollingFrequencyInMS)
+                        WDEx.log.info(&quot;\nWaiting for element, to display.2&quot;)
+                    }
+                }
+            }
+            else
+            {
+                i=1
+                sleep(pollingFrequencyInMS)
+                WDEx.log.info(&quot;\nWaiting for element, to display.3&quot;)
+            }
+    }
+}
+
+int checkTimeIsOver(currentTime, maxTime){
+	if(currentTime&gt;=maxTime){
+		WDS.sampleResult.setSuccessful(false)
+		WDS.sampleResult.setResponseCode(&quot;The waiting for the element is over&quot;)
+		WDS.sampleResult.isStopThread()
+		WDS.log.info(&quot;ERROR&quot;)
+		return 2
+	}
+	return 1
+}
+
+//----------------------------------------------Don`t touch------------------------------------------------//</stringProp>
+          <stringProp name="WebDriverSampler.parameters"></stringProp>
+          <stringProp name="WebDriverSampler.language">groovy</stringProp>
+        </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <sentBytes>true</sentBytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+            <idleTime>true</idleTime>
+            <connectTime>true</connectTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
